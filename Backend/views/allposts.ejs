@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Posts</h1>
+    <% posts.forEach(post => { %>
+        <h2><%= post.author.username %></h2>
+        <br><img src="<%= post.media %>" alt="Profile Picture" width="50" height="50" style="border-radius: 50%;">
+        <h3><%= post.caption %></h3>
+        <p>Likes: <%= post.likes.length %></p>
+        <form action="/likepost/<%= post._id %>" method="POST">
+            <button type="submit">like</button> <br>
+        </form>
+
+        <!-- displaycomments --> 
+
+        <!-- not done  -->
+
+        <form action="/addcomment/<%= post._id %>" method="POST">
+            <input type="text" placeholder="comment here" name="text">
+            <button>comment</button>
+        </form>
+    <% }); %>
+</body>
+</html>

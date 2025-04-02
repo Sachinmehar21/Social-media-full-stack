@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    
+    <!-- Profile Picture -->
+    <img src="<%= user.profilepicture %>" alt="Profile Picture" width="200" height="200">
+    
+    <!-- User Info -->
+    <p><strong>Username:</strong> <%= user.username %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>    
+    <p><strong>Followers:</strong> <%= user.followers.length %></p>
+    <p><strong>Following:</strong> <%= user.following.length %></p>
+
+    <!-- Follow / Unfollow Button -->
+    <% if (user._id.toString() !== currentUser._id.toString()) { %> 
+        <% if (user.followers.some(follower => follower.toString() === currentUser._id.toString())) { %>
+            <form action="/unfollow/<%= user.username %>" method="POST" style="display:inline;">
+                <button type="submit">Unfollow</button>
+            </form>
+        <% } else { %>
+            <form action="/follow/<%= user.username %>" method="POST" style="display:inline;">
+                <button type="submit">Follow</button>
+            </form>
+        <% } %>
+    <% } %>
+
+    <br><br>
+
+    <!-- Edit Profile Button -->
+    <% if (currentUser._id.toString() === user._id.toString()) { %>
+        <button><a href="/profile/<%= user.username %>/edit">Edit</a></button> <br><br>
+    <% } %>
+
+    <!-- Posts Section -->
+    <div class="posts">
+        <% posts.forEach(post => { %>
+            <div class="post">
+                <img src="<%= post.media %>" alt="Post Image">
+                <p><%= post.caption %></p>
+                <p>Likes: <%= post.likes.length %></p>
+                
+                <!-- Comments Section -->
+                <h4>Comments:</h4>
+                <% if (post.comments.length > 0) { %>
+                    <ul>
+                        <% post.comments.forEach(comment => { %>
+                            <li>
+                                <strong><%= comment.user.username %>:</strong> <%= comment.text %> <br>
+                                <form action="/deletecomment/<%= comment._id %>" method="POST" style="display:inline;">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p>No comments yet.</p>
+                <% } %>
+
+                <!-- Add Comment Form -->
+                <form action="/addcomment/<%= post._id %>" method="POST">
+                    <input type="text" name="text" placeholder="Write a comment..." required>
+                    <button type="submit">Comment</button>
+                </form>
+
+                <!-- Delete Post Button -->
+                <form action="/deletepost/<%= post._id %>" method="POST">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        <% }); %>
+    </div>
+
+    <!-- Logout Button -->
+    <form action="/logout" method="POST">
+      <button type="submit">Logout</button>
+    </form>
+
+    <br>
+
+    <!-- Upload -->
+     <a href="/upload">Upload</a><br><br>
+
+    <!-- View all users -->
+    <a href="/users">View all users</a>
+
+    <br>
+
+    <!-- View all posts -->
+    <a href="/allposts">View all posts</a>
+
+    <br>
+
+    <!-- Users the Profile Owner is Following -->
+    <h2>Following</h2>
+    <% if (user.following.length > 0) { %>
+        <ul>
+            <% user.following.forEach(followingUser => { %>
+                <li>
+                    <a href="/profile/<%= followingUser.username %>">
+                        <img src="<%= followingUser.profilepicture %>" alt="<%= followingUser.username %>'s profile picture" width="30">
+                        <%= followingUser.username %>
+                    </a>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>Not following anyone yet.</p>
+    <% } %>
+
+</body>
+</html>

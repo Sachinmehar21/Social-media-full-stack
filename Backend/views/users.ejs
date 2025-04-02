@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>All Users</h2>
+        <% users.forEach(user => { %>
+                <br><img src="<%= user.profilepicture %>" alt="Profile Picture" width="50" height="50" style="border-radius: 50%;">
+                <a href="/profile/<%= user.username %>"><%= user.username %></a> <br>
+                <form action="/follow/<%= user.username %>" method="POST"> <br>
+                    <button type="submit">Follow</button> <br>
+                </form>
+        <% }); %>
+</body>
+</html>
