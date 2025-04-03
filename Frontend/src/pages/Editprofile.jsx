@@ -1,76 +1,75 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-const EditProfile = ({ user, setUser }) => {
+const EditProfile = () => {
   const navigate = useNavigate();
-  const [newUsername, setNewUsername] = useState(user?.username || "");
-  const [profilePicture, setProfilePicture] = useState(null);
+  const { username } = useParams();
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({ username: "", file: null });
+  const [error, setError] = useState("");
 
-  // const defaultProfilePic =
-  //   "https://res.cloudinary.com/dyvfgglux/image/upload/v1738956001/WhatsApp_Image_2025-01-30_at_03.35.12_9bf2ee3c-removebg-preview_flote7.png";
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:3000/profile/${username}`, { withCredentials: true });
+        setUser(data.user);
+        setFormData(prev => ({ ...prev, username: data.user.username }));
+      } catch (err) {
+        setError("Error fetching user data");
+      }
+    };
+    fetchUser();
+  }, [username]);
 
-  // Function to update username
-  const handleUsernameUpdate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-      const response = await axios.post(
-        `http://localhost:3000/profile/${user._id}/edit`, 
-        { username: newUsername },
-        { withCredentials: true }
-      );
-
-      console.log("Username updated:", response.data);
-      setUser(response.data.user);
-      navigate(`/profile/${response.data.user.username}`);
+    if (!user?._id) return;
     
-  };
+    try {
+      const data = new FormData();
+      if (formData.file) data.append("file", formData.file);
+      if (formData.username) data.append("username", formData.username);
 
-  // Function to update profile picture
-  const handleProfilePictureUpdate = async (e) => {
-    e.preventDefault();
-    if (!profilePicture) return;
-
-    const formData = new FormData();
-    formData.append("file", profilePicture);
       const response = await axios.post(
         `http://localhost:3000/profile/${user._id}/edit`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        data,
+        { withCredentials: true, headers: formData.file ? { "Content-Type": "multipart/form-data" } : {} }
       );
 
-      console.log("Profile picture updated:", response.data);
       setUser(response.data.user);
       navigate(`/profile/${response.data.user.username}`);
-    
+    } catch (err) {
+      setError(err.response?.data?.message || "Error updating profile");
+    }
   };
 
-  // if (!user) return <h1>Loading...</h1>;
+  if (!user) return null;
 
   return (
     <div>
       <h1>Edit Profile</h1>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {/* Profile Picture Update */}
-      <form onSubmit={handleProfilePictureUpdate} encType="multipart/form-data">
-        <h2>Change Profile Picture</h2>
-        <br />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button type="submit">Upload</button>
-      </form>
-
-      {/* Username Update */}
-      <form onSubmit={handleUsernameUpdate}>
-        <h2>
-          <strong>Current Username:</strong> {user.username}
-        </h2>
-        <input type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)}  />
-        <button type="submit">Update</button>
+      {error && <div>{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+          />
+        </div>
+        <div>
+          <label htmlFor="file">Profile Picture</label>
+          <input
+            id="file"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+          />
+        </div>
+        <button type="submit">Save Changes</button>
       </form>
     </div>
   );

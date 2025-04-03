@@ -3,6 +3,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/Editprofile";
+import Upload from "./pages/Upload";
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/profile/:username/edit" element={<EditProfile />} />
+        <Route path="/upload" element={<Upload />} />
       </Routes>
     </Router>
   );
