@@ -1,243 +1,112 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { GoHome } from "react-icons/go";
+import { MdAddPhotoAlternate } from "react-icons/md";
+import { IoSearch } from "react-icons/io5";
+import "./Profile.css";
 
 const Profile = () => {
-  const { username } = useParams(); // Get username from URL params
+  const { username } = useParams();
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [newComment, setNewComment] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:3000/profile/${username}`, { withCredentials: true });
+        setLoading(true);
+        const { data } = await axios.get(`http://localhost:3000/profile/${username}`, { 
+          withCredentials: true 
+        });
         setUser(data.user);
         setPosts(data.posts);
+        setCurrentUser(data.currentUser);
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
   }, [username]);
 
-  const handleDeletePost = async (postId) => {
-    try {
-      await axios.post(`http://localhost:3000/deletepost/${postId}`, {}, { withCredentials: true });
-      // Update posts state instead of reloading
-      setPosts(posts.filter(post => post._id !== postId));
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
-  };
-
-  const handleLikePost = async (postId) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/likepost/${postId}`,
-        {},
-        { withCredentials: true }
-      );
-      
-      if (response.data.success) {
-        // Update the posts state with the new like status
-        setPosts(posts.map(post => {
-          if (post._id === postId) {
-            return {
-              ...post,
-              likes: response.data.likes,
-              isLiked: response.data.isLiked
-            };
-          }
-          return post;
-        }));
-      }
-    } catch (error) {
-      console.error("Error liking post:", error);
-    }
-  };
-
-  const handleAddComment = async (postId) => {
-    if (!newComment[postId] || newComment[postId].trim() === "") return;
-    
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/comment/${postId}`,
-        { comment: newComment[postId] },
-        { withCredentials: true }
-      );
-      
-      if (response.data.success) {
-        // Update the posts state with the new comment
-        setPosts(posts.map(post => {
-          if (post._id === postId) {
-            return {
-              ...post,
-              comments: [...post.comments, response.data.comment]
-            };
-          }
-          return post;
-        }));
-        
-        // Clear the comment input
-        setNewComment(prev => ({ ...prev, [postId]: "" }));
-      }
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
-  };
-
-  const handleDeleteComment = async (commentId, postId) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/deletecomment/${commentId}`,
-        {},
-        { withCredentials: true }
-      );
-      
-      if (response.data.success) {
-        // Update the posts state by removing the deleted comment
-        setPosts(posts.map(post => {
-          if (post._id === postId) {
-            return {
-              ...post,
-              comments: post.comments.filter(comment => comment._id !== commentId)
-            };
-          }
-          return post;
-        }));
-      }
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-    }
-  };
-
-  const handleFollow = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/follow/${user._id}`,
-        {},
-        { withCredentials: true }
-      );
-      
-      if (response.data.success) {
-        setUser(prev => ({
-          ...prev,
-          followers: [...prev.followers, response.data.currentUser._id],
-          isFollowing: true
-        }));
-      }
-    } catch (error) {
-      console.error("Error following user:", error);
-    }
-  };
-
-  const handleUnfollow = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/unfollow/${user._id}`,
-        {},
-        { withCredentials: true }
-      );
-      
-      if (response.data.success) {
-        setUser(prev => ({
-          ...prev,
-          followers: prev.followers.filter(id => id !== response.data.currentUser._id),
-          isFollowing: false
-        }));
-      }
-    } catch (error) {
-      console.error("Error unfollowing user:", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await axios.get("http://localhost:3000/logout", { withCredentials: true });
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
-
-  if (!user) return <div>Loading...</div>;
+  if (loading) return <div className="profile-container">Loading...</div>;
+  if (!user) return <div className="profile-container">Could not find user profile</div>;
 
   return (
-    <div>
-      <div>
-        <h1>{user.username}'s Profile</h1>
-        <img src={user.profilePic || "default-avatar.png"} alt="Profile" />
-        <div>
-          <p>Followers: {user.followers.length}</p>
-          <p>Following: {user.following.length}</p>
+    <>
+      <div className="profile-container">
+        <div className="nav">
+          <h3 className="username">{user.username}</h3>
+          <div className="icons">
+            <Link to="/upload">
+              <MdAddPhotoAlternate size={24} />
+            </Link>
+          </div>
         </div>
-        
-        {user.isCurrentUser ? (
-          <div>
-            <button onClick={() => navigate(`/profile/${user.username}/edit`)}>Edit Profile</button>
-            <button onClick={handleLogout}>Logout</button>
+
+        <div className="profile-header">
+          <div className="profile-pic">
+            <img 
+              src={user.profilepicture || "https://res.cloudinary.com/dyvfgglux/image/upload/v1743708891/image_z3anjm.png"} 
+              alt="Profile" 
+            />
           </div>
-        ) : (
-          <div>
-            {user.isFollowing ? (
-              <button onClick={handleUnfollow}>Unfollow</button>
-            ) : (
-              <button onClick={handleFollow}>Follow</button>
-            )}
+          <div className="stats">
+            <div className="stat-item">
+              <h3>{posts.length}</h3>
+              <h4>Posts</h4>
+            </div>
+            <div className="stat-item">
+              <h3>{user.followers?.length || 0}</h3>
+              <h4>Followers</h4>
+            </div>
+            <div className="stat-item">
+              <h3>{user.following?.length || 0}</h3>
+              <h4>Following</h4>
+            </div>
           </div>
-        )}
+        </div>
+
+        <div className="details">
+          <h3>{user.name || user.username}</h3>
+          <p>{user.bio || 'Add bio'}</p>
+        </div>
+
+        <div className="edit-profile">
+          <Link to={`/profile/${username}/edit`}>Edit Profile</Link>
+        </div>
+
+        <div className="posts-grid">
+          {posts.length > 0 ? (
+            [...posts].reverse().map(post => (
+              <div key={post._id} className="post">
+                <img src={post.media} alt="Post" />
+              </div>
+            ))
+          ) : (
+            <p className="no-posts">Create your first post!</p>
+          )}
+        </div>
       </div>
 
-      <div>
-        <h2>Posts</h2>
-        {posts.length === 0 ? (
-          <p>No posts yet</p>
-        ) : (
-          posts.map(post => (
-            <div key={post._id}>
-              <img src={post.media} alt="Post" />
-              <p>{post.caption}</p>
-              <p>Likes: {post.likes.length}</p>
-              <button onClick={() => handleLikePost(post._id)}>
-                {post.isLiked ? "Unlike" : "Like"}
-              </button>
-              
-              {user.isCurrentUser && (
-                <button onClick={() => handleDeletePost(post._id)}>Delete</button>
-              )}
-              
-              <div>
-                <h3>Comments</h3>
-                {post.comments.map(comment => (
-                  <div key={comment._id}>
-                    <p>
-                      <strong>{comment.user.username}</strong>: {comment.text}
-                      {comment.user._id === user._id && (
-                        <button onClick={() => handleDeleteComment(comment._id, post._id)}>
-                          Delete
-                        </button>
-                      )}
-                    </p>
-                  </div>
-                ))}
-                
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Add a comment..."
-                    value={newComment[post._id] || ""}
-                    onChange={(e) => setNewComment(prev => ({ ...prev, [post._id]: e.target.value }))}
-                  />
-                  <button onClick={() => handleAddComment(post._id)}>Comment</button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
+      <div className="footer">
+        <Link to="/feed"><GoHome size={24} /></Link>
+        <Link to="/search"><IoSearch size={24} /></Link>
+        <Link to="/upload"><MdAddPhotoAlternate size={24} /></Link>
+        <Link to="/profile">
+          <div className="footer-profile">
+            <img 
+              src={user.profilepicture || "https://res.cloudinary.com/dyvfgglux/image/upload/v1743708891/image_z3anjm.png"} 
+              alt="Profile" 
+            />
+          </div>
+        </Link>
       </div>
-    </div>
+    </>
   );
 };
 

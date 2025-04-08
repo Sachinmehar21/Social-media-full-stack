@@ -1,0 +1,91 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #18181b; /* Same as register page */
+  }
+  
+  .login-container {
+    min-height: 100vh;
+    background-color: #18181b;
+    color: white;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .login-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0 1rem;
+  }
+  
+  .logo {
+    width: 50%;
+  }
+  
+  .login-form {
+    width: 100%;
+  }
+  
+  .form-input {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #27272a;
+    border-radius: 0.375rem;
+    display: block;
+    width: 100%;
+    background-color: #18181b;
+    color: white;
+    margin-top: 0.5rem;
+  }
+  
+  .form-input::placeholder {
+    color: #a1a1aa;
+  }
+  
+  .error-message {
+    margin: 0.75rem 0;
+    font-size: 1.125rem;
+    text-align: center;
+    color: #ef4444;
+  }
+  
+  .submit-button {
+    width: 100%;
+    background-color: #3b82f6;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-top: 0.5rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .submit-button:hover {
+    background-color: #2563eb;
+  }
+  
+  .register-link-container {
+    margin-top: 1rem;
+  }
+  
+  .register-link {
+    color: #3b82f6;
+    text-decoration: none;
+  }
+  
+  .register-link:hover {
+    text-decoration: underline;
+  }
+  

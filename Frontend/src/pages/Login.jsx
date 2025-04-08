@@ -1,6 +1,8 @@
+import React from "react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import "./Login.css"; // Importing the CSS file
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,46 +27,45 @@ const Login = () => {
         formData,
         { withCredentials: true }
       );
-      if (response.data.success) {
-        navigate(`/profile/${response.data.user.username}`);
+      if (response.data.username) {
+        navigate(`/profile/${response.data.username}`);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Error logging in");
+      setError(err.response?.data || "Invalid email or password");
     }
   };
 
   return (
-    <div>
-      <div>
-        <h1>Login</h1>
-        {error && <div>{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit">Login</button>
+    <div className="login-container">
+      <div className="login-content">
+        <img 
+          className="logo" 
+          src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708868/logo_m1jyai.png" 
+          alt="Logo" 
+        />
+        <form className="login-form" onSubmit={handleSubmit}>
+          <input
+            className="form-input"
+            type="text"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="form-input"
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
+          />
+          {error && <p className="error-message">*{error}</p>}
+          <button type="submit" className="submit-button">Login</button>
         </form>
-        <div>
-          Don't have an account? <Link to="/">Register</Link>
+        <div className="register-link-container">
+          Don't have an account?{" "}
+          <Link to="/" className="register-link">Register</Link>
         </div>
       </div>
     </div>

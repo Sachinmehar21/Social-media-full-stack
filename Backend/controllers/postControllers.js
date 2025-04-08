@@ -24,17 +24,28 @@ module.exports.upload = [verifyToken, (req, res) => {
 }];
 
 //post
-module.exports.post = [verifyToken,upload.single('media'), async (req,res) => {
+module.exports.post = [verifyToken, upload.single('media'), async (req,res) => {
     try {
+        if (!req.file) {
+            return res.status(400).json({ 
+                success: false,
+                message: "No file uploaded"
+            });
+        }
+
         const user = req.user;
         const { caption } = req.body;
 
+        console.log("Uploading file to Cloudinary:", req.file.path);
+        
         const result = await cloudinary.uploader.upload(req.file.path, {
             folder: "posts",
             transformation: [
-                { width: 300, height: 300, crop: "fill" } // Simple square crop without face focus
+                { width: 300, height: 300, crop: "fill" }
             ]
         });
+
+        console.log("Cloudinary upload successful:", result.secure_url);
 
         const post = await Post.create({
             author: user._id, 
@@ -61,7 +72,8 @@ module.exports.post = [verifyToken,upload.single('media'), async (req,res) => {
         console.error("Error creating post:", error);
         res.status(500).json({ 
             success: false,
-            message: "Error creating post"
+            message: "Error creating post",
+            error: error.message
         });
     }
 }]

@@ -140,3 +140,32 @@ module.exports.unfollow = [verifyToken, async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 }];
+
+// Feed Route
+module.exports.feed = [verifyToken, async (req, res) => {
+    try {
+        const currentUser = req.user;
+        
+        // Get all posts from users that the current user follows
+        const posts = await Post.find({
+            author: { $in: [...currentUser.following, currentUser._id] }
+        })
+        .sort({ createdAt: -1 })
+        .populate('author', 'username profilepicture')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user',
+                select: 'username'
+            }
+        });
+
+        res.json({
+            user: currentUser,
+            posts: posts
+        });
+    } catch (error) {
+        console.error("Error fetching feed:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}];
