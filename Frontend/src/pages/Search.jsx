@@ -1,25 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "../styles/Search.css";
+import { Link, useNavigate } from "react-router-dom";
+import { BsChatDots } from "react-icons/bs";
+import { FiHome, FiSearch, FiPlusSquare, FiUser } from "react-icons/fi";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Generate images based on screen size
+  const imageCount = window.innerWidth >= 1024 ? 44 : 15;
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/feed", {
+          withCredentials: true,
+        });
+        setCurrentUser(response.data.user);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+        navigate("/login");
+      }
+    };
+    fetchCurrentUser();
+  }, [navigate]);
 
   const handleSearch = async (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    if (value) {
+    if (value.trim()) {
       try {
-        const res = await axios.get(`/search/${value}`);
-        if (Array.isArray(res.data)) {
-          setUsers(res.data);
-        } else {
-          console.warn("Unexpected response:", res.data);
-          setUsers([]);
-        }
-      } catch (err) {
-        console.error("Search failed", err);
+        const response = await axios.get(`http://localhost:3000/search/${value}`, {
+          withCredentials: true,
+        });
+        setUsers(response.data.users || []);
+      } catch (error) {
+        console.error("Search failed", error);
         setUsers([]);
       }
     } else {
@@ -27,146 +50,128 @@ const Search = () => {
     }
   };
 
-  // Generate images based on screen size
-  const imageCount = window.innerWidth >= 1024 ? 44 : 8;
+  const handleFollow = async (username) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/follow/${username}`,
+        {},
+        { withCredentials: true }
+      );
+      
+      if (response.data.success) {
+        setUsers(users.map(user => {
+          if (user.username === username) {
+            return {
+              ...user,
+              followers: [...(user.followers || []), currentUser._id]
+            };
+          }
+          return user;
+        }));
+      }
+    } catch (error) {
+      console.error("Error following user:", error);
+    }
+  };
+
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
-    <>
-      <style>{`
-        .container {
-          width: 100%;
-          min-height: 100vh;
-          background-color: #18181b;
-          padding: 20px;
-          box-sizing: border-box;
-        }
+    <div className="search-container">
+      <div className="topbar">
+        <Link to="/feed">
+          <img
+            src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708891/image_z3anjm.png"
+            alt="logo"
+            className="logo"
+          />
+        </Link>
+        <div className="topbar-icons">
+          <Link to="/dm">
+            <div className="topbar-icon">
+              <BsChatDots />
+            </div>
+          </Link>
+          <Link to={`/profile/${currentUser?.username}`} className="user-profile-link">
+            <img
+              src={currentUser?.profilepicture || "/default-profile.png"}
+              alt={currentUser?.username}
+              className="user-avatar"
+            />
+          </Link>
+        </div>
+      </div>
 
-        .search-bar {
-          border: 2px solid #27272a;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 6px 10px;
-          border-radius: 8px;
-        }
-
-        .search-icon {
-          color: white;
-          font-size: 20px;
-        }
-
-        .search-input {
-          margin-left: 10px;
-          width: 100%;
-          background-color: #18181b;
-          border: none;
-          outline: none;
-          color: #a1a1aa;
-          font-size: 16px;
-        }
-
-        .image-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          gap: 16px;
-          margin-top: 20px;
-        }
-
-        @media (min-width: 1024px) {
-          .image-grid {
-            grid-template-columns: repeat(7, 1fr);
-          }
-          .image-grid img {
-            height: 160px;
-          }
-        }
-
-        .image-grid img {
-          width: 100%;
-          height: 120px;
-          object-fit: cover;
-          border-radius: 8px;
-        }
-
-        .users {
-          margin-top: 24px;
-        }
-
-        .user-card {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-top: 20px;
-          text-decoration: none;
-          color: white;
-        }
-
-        .user-pic {
-          width: 60px;
-          height: 60px;
-          border-radius: 9999px;
-          overflow: hidden;
-          background-color: #bae6fd;
-        }
-
-        .user-pic img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .user-info h4 {
-          font-size: 12px;
-          opacity: 0.5;
-          margin: 0;
-        }
-
-        .user-info h3 {
-          margin: 0;
-        }
-      `}</style>
-
-      <div className="container">
-        {/* Search bar */}
+      <div className="search-content">
         <div className="search-bar">
-          <i className="search-icon ri-search-line" />
           <input
             type="text"
             className="search-input"
-            placeholder="Search SpamsAccounts!"
+            placeholder="Search users..."
             value={searchTerm}
             onChange={handleSearch}
           />
         </div>
 
-        {/* Images */}
-        <div className="image-grid">
-          {Array.from({ length: imageCount }, (_, i) => (
-            <img
-              key={i}
-              src={`https://picsum.photos/200/300?random=${i + 1}`}
-              alt={`Random ${i + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Search result users */}
-        <div className="users">
-          {Array.isArray(users) &&
-            users.map((user, i) => (
-              <a href="/profile" key={i} className="user-card">
-                <div className="user-pic">
-                  <img src={`/images/upload/${user.pic}`} alt={user.username} />
+        {searchTerm ? (
+          <div className="search-results">
+            {users.length > 0 ? (
+              users.map((user) => (
+                <div key={user._id} className="user-card">
+                  <Link to={`/profile/${user.username}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', flex: 1 }}>
+                    <img
+                      src={user.profilepicture || "/default-profile.png"}
+                      alt={user.username}
+                      className="user-avatar"
+                    />
+                    <div className="user-info">
+                      <div className="username">{user.username}</div>
+                      <div className="fullname">{user.fullname || user.username}</div>
+                    </div>
+                  </Link>
+                  {currentUser._id !== user._id && (
+                    <button
+                      className={user.followers?.includes(currentUser._id) ? "unfollow-button" : "follow-button"}
+                      onClick={() => handleFollow(user.username)}
+                    >
+                      {user.followers?.includes(currentUser._id) ? 'Following' : 'Follow'}
+                    </button>
+                  )}
                 </div>
-                <div className="user-info">
-                  <h3>{user.username}</h3>
-                  <h4>{user.name}</h4>
-                </div>
-              </a>
+              ))
+            ) : (
+              <div className="no-results">No users found</div>
+            )}
+          </div>
+        ) : (
+          <div className="image-grid">
+            {Array.from({ length: imageCount }, (_, i) => (
+              <img
+                key={i}
+                src={`https://picsum.photos/200/300?random=${i + 2}`}
+                alt={`Random ${i + 1}`}
+                className="grid-image"
+              />
             ))}
-        </div>
+          </div>
+        )}
       </div>
-    </>
+
+      <div className="bottom-nav">
+        <Link to="/feed" className="nav-icon">
+          <FiHome />
+        </Link>
+        <Link to="/search" className="nav-icon">
+          <FiSearch />
+        </Link>
+        <Link to="/upload" className="nav-icon">
+          <FiPlusSquare />
+        </Link>
+        <Link to={`/profile/${currentUser?.username}`} className="nav-icon">
+          <FiUser />
+        </Link>
+      </div>
+    </div>
   );
 };
 

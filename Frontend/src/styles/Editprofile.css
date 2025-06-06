@@ -1,0 +1,222 @@
+/* EditProfile.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #000;
+    max-width: 975px;
+    margin: 0 auto;
+  }
+  
+  .nav {
+    position: sticky;
+    top: 0;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #000;
+    border-bottom: 1px solid #262626;
+    z-index: 10;
+    width: 100%;
+  }
+  
+  .nav h2 {
+    font-size: 18px !important;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+    background-color: #000;
+  }
+  
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 2px solid #262626;
+  }
+  
+  .profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .edit-btn {
+    display: inline-block;
+    padding: 12px 16px;
+    background-color: #27272a;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+  
+  .edit-btn:hover {
+    background-color: #3f3f46;
+  }
+  
+  .form-container {
+    background-color: #000;
+    padding: 0 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .form-container h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  
+  .form-container hr {
+    border: none;
+    height: 1px;
+    background-color: #262626;
+    margin: 0 0 24px 0;
+  }
+  
+  .form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-container input[type="text"],
+  .form-container textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: #000;
+    color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+  }
+  
+  .form-container input[type="text"]:focus,
+  .form-container textarea:focus {
+    outline: none;
+    border-color: #0095f6;
+  }
+  
+  .form-container textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  
+  .form-container input::placeholder,
+  .form-container textarea::placeholder {
+    color: #8e8e8e;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .submit-btn {
+    display: inline-block;
+    padding: 12px 16px;
+    background-color: #0095f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .submit-btn:hover {
+    background-color: #1877f2;
+  }
+  
+  .submit-btn:disabled {
+    background-color: #27272a;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  /* Error message styling */
+  p[style*="color: red"] {
+    background-color: rgba(237, 73, 86, 0.1);
+    border: 1px solid rgba(237, 73, 86, 0.3);
+    color: #ed4956 !important;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 0 0 16px 0;
+    font-size: 14px;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .center {
+      padding: 24px 16px;
+    }
+    
+    .form-container {
+      padding: 0 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .nav {
+      padding: 12px 16px;
+    }
+    
+    .profile-pic {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .center {
+      padding: 20px 12px;
+    }
+    
+    .form-container {
+      padding: 0 12px;
+    }
+    
+    .form-container h3 {
+      font-size: 1rem;
+    }
+  }

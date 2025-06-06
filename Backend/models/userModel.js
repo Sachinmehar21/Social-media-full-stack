@@ -1,13 +1,11 @@
 const mongoose = require("mongoose");
 
-// Forcefully delete old model if it exists
-delete mongoose.connection.models["User"];
-
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    bio: { type: String, default: "" },
     profilepicture: {
       type: String,
       default: () => {

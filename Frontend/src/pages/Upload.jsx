@@ -49,12 +49,13 @@ const Upload = () => {
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          background: #121212;
+          background: #000000;
           color: #e0e0e0;
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          margin: 0 10px;
         }
         .upload-card {
-          background: #1e1e1e;
+          background: #000000;
           border: 1px solid #333;
           padding: 30px;
           width: 400px;
@@ -79,7 +80,7 @@ const Upload = () => {
         .media-preview {
           width: 100%;
           height: 250px;
-          background: #2a2a2a;
+          background: #000000;
           border: 2px dashed #444;
           border-radius: 10px;
           display: flex;
@@ -91,6 +92,7 @@ const Upload = () => {
         .media-preview img {
           max-width: 100%;
           max-height: 100%;
+          
         }
         .input-group {
           margin-bottom: 15px;
@@ -105,7 +107,7 @@ const Upload = () => {
         .input-group input[type="text"] {
           width: 100%;
           padding: 8px;
-          background-color: #2a2a2a;
+          background-color: #000000;
           color: #fff;
           border: 1px solid #444;
           border-radius: 6px;

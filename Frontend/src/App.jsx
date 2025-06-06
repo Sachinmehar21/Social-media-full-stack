@@ -7,6 +7,8 @@ import EditProfile from "./pages/Editprofile";
 import Upload from "./pages/Upload";
 import Homepage from "./pages/Homepage";
 import Search from "./pages/Search"; 
+import Dm from "./pages/Dm"; 
+import Allusers from "./pages/Allusers";
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
         <Route path="/upload" element={<Upload />} />
         <Route path="/feed" element={<Homepage />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/dm" element={<Dm />} />
+        <Route path="/users" element={<Allusers />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

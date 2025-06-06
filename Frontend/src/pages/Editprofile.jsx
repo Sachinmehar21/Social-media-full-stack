@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import "../styles/Editprofile.css";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const EditProfile = () => {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({ username: "", name: "", bio: "", file: null });
   const [error, setError] = useState("");
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -16,10 +18,10 @@ const EditProfile = () => {
         setUser(data.user);
         setFormData({
           username: data.user.username,
-          name: data.user.name,
           bio: data.user.bio,
           file: null,
         });
+        setPreviewUrl(data.user.profilepicture);
       } catch (err) {
         setError("Error fetching user data");
       }
@@ -35,7 +37,6 @@ const EditProfile = () => {
       const data = new FormData();
       if (formData.file) data.append("file", formData.file);
       data.append("username", formData.username);
-      data.append("name", formData.name);
       data.append("bio", formData.bio);
 
       const response = await axios.post(
@@ -44,13 +45,23 @@ const EditProfile = () => {
         {
           withCredentials: true,
           headers: formData.file ? { "Content-Type": "multipart/form-data" } : {},
-        }
+        }  
       );
 
       setUser(response.data.user);
       navigate(`/profile/${response.data.user.username}`);
     } catch (err) {
       setError(err.response?.data?.message || "Error updating profile");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, file });
+      // Create a preview URL for the selected image
+      const fileUrl = URL.createObjectURL(file);
+      setPreviewUrl(fileUrl);
     }
   };
 
@@ -62,103 +73,14 @@ const EditProfile = () => {
 
   return (
     <div>
-      <style>{`
-        .page {
-          background-color: #18181b;
-          color: white;
-          min-height: 100vh;
-          padding: 20px 0;
-          font-family: sans-serif;
-        }
-        .nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0 16px;
-        }
-        .nav a {
-          color: #3b82f6;
-          font-size: 14px;
-          text-decoration: none;
-        }
-        .center {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-          margin-top: 60px;
-        }
-        .profile-pic {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background-color: #bae6fd;
-          overflow: hidden;
-        }
-        .profile-pic img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .edit-btn {
-          color: #3b82f6;
-          background: none;
-          border: none;
-          cursor: pointer;
-          text-transform: capitalize;
-        }
-        .form-container {
-          padding: 0 16px;
-          margin-top: 40px;
-        }
-        .form-container h3 {
-          font-size: 18px;
-          margin-bottom: 8px;
-        }
-        .form-container hr {
-          opacity: 0.3;
-          margin-bottom: 16px;
-        }
-        form input,
-        form textarea {
-          width: 100%;
-          padding: 10px 12px;
-          margin-top: 8px;
-          border: 2px solid #27272a;
-          border-radius: 6px;
-          background-color: #18181b;
-          color: white;
-        }
-        form textarea {
-          resize: none;
-          height: 100px;
-        }
-        .submit-btn {
-          width: 100%;
-          background-color: #3b82f6;
-          color: white;
-          padding: 12px;
-          border: none;
-          border-radius: 6px;
-          margin-top: 12px;
-          cursor: pointer;
-          font-weight: bold;
-        }
-        .hidden {
-          display: none;
-        }
-      `}</style>
-
       <div className="page">
         <div className="nav">
-          <a href="/profile">&#8592; Profile</a>
           <h2 style={{ fontSize: "14px" }}>Edit Profile</h2>
-          <a href="/feed">&#8962; Home</a>
         </div>
 
         <div className="center">
           <div className="profile-pic">
-            <img src={`http://localhost:3000/images/upload/${user.pic}`} alt="profile" />
+            <img src={previewUrl} alt="profile" />
           </div>
           <button className="edit-btn" type="button" onClick={triggerFileSelect}>
             Edit Picture
@@ -176,12 +98,6 @@ const EditProfile = () => {
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
-            <input
-              type="text"
-              placeholder="Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
             <textarea
               placeholder="Bio"
               value={formData.bio}
@@ -192,7 +108,7 @@ const EditProfile = () => {
               className="hidden"
               type="file"
               accept="image/*"
-              onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+              onChange={handleFileChange}
             />
             <button className="submit-btn" type="submit">
               Update Details

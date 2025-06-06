@@ -119,20 +119,29 @@ module.exports.likePost = [verifyToken, async(req,res) => {
 //posts(feed)   
 module.exports.allPosts = [verifyToken, async(req,res) => {
     try {
-        const posts = await Post.find({})
-            .populate('author', 'username profilepicture')
-            .populate({
-                path: 'comments',
-                populate: {
-                    path: 'user',
-                    select: 'username'
-                }
-            })
-            .sort({ createdAt: -1 }); // Sort by newest first
+        const currentUser = req.user;
+        
+        // Get posts from users that the current user follows and their own posts
+        const posts = await Post.find({
+            $or: [
+                { author: { $in: [...currentUser.following, currentUser._id] } },
+                { author: currentUser._id }
+            ]
+        })
+        .populate('author', 'username profilepicture')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user',
+                select: 'username'
+            }
+        })
+        .sort({ createdAt: -1 }); // Sort by newest first
 
         res.json({ 
             success: true,
-            posts 
+            posts,
+            user: currentUser
         });
     } catch (error) {
         console.error("Error fetching all posts:", error);
@@ -195,4 +204,30 @@ module.exports.deleteComment = [verifyToken, async (req,res) => {
     await comment.deleteOne();
 
     res.redirect(`/profile/${user.username}`);
+}];
+
+// Get post likes
+module.exports.getPostLikes = [verifyToken, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+            .populate('likes', 'username profilepicture fullname followers');
+        
+        if (!post) {
+            return res.status(404).json({ 
+                success: false,
+                message: "Post not found" 
+            });
+        }
+
+        res.json({ 
+            success: true,
+            likes: post.likes 
+        });
+    } catch (error) {
+        console.error("Error fetching post likes:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "Error fetching likes" 
+        });
+    }
 }];

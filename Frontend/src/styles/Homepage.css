@@ -1,0 +1,665 @@
+@import './Navigation.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+}
+
+.instagram-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+/* Top navbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #000;
+  border-bottom: 1px solid #262626;
+  z-index: 10;
+  width: 100%;
+}
+
+.logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+}
+
+.topbar-icons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.topbar-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+}
+
+/* FIX: Profile picture in topbar */
+.user-avatar {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  max-width: 24px;
+  max-height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* Posts */
+.content-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 16px;
+  padding-bottom: 3vw;
+}
+
+.posts-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+
+/* IMPROVED: Added more spacing between posts and made each post self-contained */
+.post {
+  margin-bottom: 24px;
+  border: 1px solid #262626;
+  border-radius: 4px;
+  background-color: #000;
+  overflow: visible;
+  width: 100%;
+  height: auto;
+  /* Added to ensure posts don't affect each other */
+  position: relative;
+  /* Added box shadow for visual separation */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #262626;
+}
+
+.post-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  gap: 10px;
+}
+
+/* FIX: Post profile picture */
+.post-avatar {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 1px solid #363636;
+  padding: 0;
+  max-width: 24px;
+  max-height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.post-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.post-options {
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* FIXED: Post image container to avoid overlap */
+.post-img-container {
+  width: 100%;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: auto;
+  min-height: 200px;
+  max-height: none;
+  overflow: hidden;
+}
+
+/* FIXED: Image display to prevent overlap */
+.post-img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+  object-fit: contain;
+  /* Added to ensure image stays within its container */
+  vertical-align: middle;
+}
+
+/* Ensure post actions are separate from image */
+.post-actions {
+  padding: 12px 16px;
+  position: relative;
+  background-color: #000;
+  border-top: 1px solid #262626; /* Visual separator */
+}
+
+.icons-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.left-icons {
+  display: flex;
+  gap: 16px;
+  font-size: 1.5rem;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.like-count {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.caption-container {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.view-comments {
+  color: #8e8e8e;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.timestamp {
+  color: #8e8e8e;
+  margin: 8px 0 0 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+/* Bottom navigation */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+  background-color: #000;
+  padding: 12px 40px;
+  font-weight: bold;
+  border-top: 1px solid #262626;
+  max-width: 1000px;
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* FIX: Added suggestions container for all screen sizes */
+.suggestions {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .instagram-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+  }
+
+  .topbar {
+    width: 100%;
+    max-width: 975px;
+  }
+
+  .content-container {
+    display: flex;
+    max-width: 975px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .posts-container {
+    margin: 0;
+    margin-right: 28px;
+    max-width: 600px;
+    width: 600px;
+  }
+
+  .post-img-container {
+    min-height: 350px;
+  }
+
+  .suggestions {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding-top: 24px;
+    position: sticky;
+    top: 88px;
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  .user-avatar-large {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 1px solid #363636;
+    padding: 0;
+    max-width: 44px;
+    max-height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    object-fit: cover;
+  }
+
+  .user-info {
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .user-display-name {
+    font-weight: 600;
+    margin-bottom: 0;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-fullname {
+    color: #8e8e8e;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestions-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+
+  .suggestions-header {
+    color: #8e8e8e;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .see-all {
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    color: #fafafa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: transparent;
+  }
+
+  .see-all:hover {
+    background-color: #363636;
+    color: #fff;
+  }
+
+  .suggestion {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    justify-content: space-between;
+    padding: 0 4px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .suggestion:hover {
+    background-color: #1a1a1a;
+  }
+
+  .user-profile-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    
+    min-width: 0;
+    width: 100%;
+    height: auto;
+  }
+
+  .suggestion-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 1px solid #363636;
+    padding: 0;
+    max-width: 44px;
+    max-height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    object-fit: cover;
+  }
+
+  .suggestion-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .suggestion-username {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestion-relation {
+    color: #8e8e8e;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .follow-btn {
+    color: #0095f6;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: transparent;
+  }
+
+  .follow-btn:hover {
+    background-color: #363636;
+  }
+
+  .follow-btn.following {
+    color: #fafafa;
+  }
+
+  .follow-btn.following:hover {
+    color: #ef5350;
+  }
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #262626;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+}
+
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #363636;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #262626;
+  z-index: 1;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  text-align: center;
+}
+
+.close-button {
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1.5rem;
+}
+
+.likes-list {
+  padding: 8px 0;
+}
+
+.like-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.like-item:hover {
+  background-color: #363636;
+}
+
+.like-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.like-info {
+  flex: 1;
+}
+
+.like-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.like-fullname {
+  color: #8e8e8e;
+  font-size: 0.85rem;
+}
+
+.follow-button {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 5px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.follow-button:hover {
+  background-color: #0081d6;
+}
+
+.comments-section {
+  margin: 8px 0;
+  padding: 0 0 0 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.comment {
+  display: flex;
+  align-items: baseline;
+  /* margin-bottom: 0px; */
+  position: relative;
+  padding: 4px 0;
+  gap: 8 px;
+}
+
+.comment-username {
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  flex-shrink: 0;
+  min-width: fit-content;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.comment-text {
+  color: #e4e6eb;
+  word-break: break-word;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  flex: 1;
+  padding-right: 24px; /* Space for delete button */
+}
+
+.delete-comment {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  color: #8e8e8e;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 8px;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.delete-comment:hover {
+  color: #ef5350;
+}
+
+.comment-input-container {
+  display: flex;
+  align-items: center;
+  padding: 12px 0px;
+  border-top: 1px solid #262626;
+  background-color: #000;
+}
+
+.comment-input-container input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.comment-input-container input:focus {
+  background-color: #262626;
+}
+
+.comment-input-container input::placeholder {
+  color: #8e8e8e;
+}
+
+.post-comment {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  margin-left: 8px;
+}
+
+.post-comment:disabled {
+  color: #b2dffc;
+  cursor: default;
+  opacity: 0.5;
+}
+
+.post-comment:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.view-comments {
+  color: #8e8e8e;
+  font-size: 14px;
+  margin: 4px 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.view-comments:hover {
+  color: #e4e6eb;
+}
