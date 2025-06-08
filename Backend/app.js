@@ -37,7 +37,7 @@ app.use("/", require("./routes/userRoutes"))
 app.use("/", require("./routes/postRoutes"))
 app.use("/", require("./routes/authRoutes"))
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
