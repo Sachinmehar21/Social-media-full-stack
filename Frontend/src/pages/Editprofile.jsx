@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from '../api';
 import "../styles/Editprofile.css";
 
 const EditProfile = () => {
@@ -14,7 +15,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:3000/profile/${username}`, { withCredentials: true });
+        const { data } = await axios.get(`${API_URL}/profile/${username}`, { withCredentials: true });
         setUser(data.user);
         setFormData({
           username: data.user.username,
@@ -40,7 +41,7 @@ const EditProfile = () => {
       data.append("bio", formData.bio);
 
       const response = await axios.post(
-        `http://localhost:3000/profile/${user._id}/edit`,
+        `${API_URL}/profile/${user._id}/edit`,
         data,
         {
           withCredentials: true,

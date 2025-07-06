@@ -3,6 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Register.css";
+import { API_URL } from '../api';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const Register = () => {
   const [data, setData] = useState({});
@@ -19,7 +21,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/",
+        API_URL,
         { username, email, password },
         { withCredentials: true }
       );
@@ -33,52 +35,76 @@ const Register = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post('http://localhost:5000/auth/google', {
+        token: credentialResponse.credential,
+      });
+      localStorage.setItem('jwt', res.data.token);
+      window.location.href = '/';
+    } catch (err) {
+      alert('Google registration failed.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    alert('Google registration was unsuccessful.');
+  };
+
   return (
-    <div className="register-container">
-      <div className="register-content">
-        <img
-          className="logo"
-          src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708868/logo_m1jyai.png"
-          alt="Logo"
-        />
-        <form className="register-form" onSubmit={handleSubmit}>
-          <input
-            className="form-input"
-            type="text"
-            name="username"
-            placeholder="Username For your Spam account"
-            onChange={handleChange}
-            required
+    <GoogleOAuthProvider clientId="205780044927-usa3mt7u7i8h5jh5kv4dfaengocpomfi.apps.googleusercontent.com">
+      <div className="register-container">
+        <div className="register-content">
+          <img
+            className="logo"
+            src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708868/logo_m1jyai.png"
+            alt="Logo"
           />
-          <input
-            className="form-input"
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
-          />
-          <input
-            className="form-input"
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-          />
-          {error && <p className="error-message">*{error}</p>}
-          <button type="submit" className="submit-button">
-            Make New Account
-          </button>
-        </form>
-        <div className="login-link-container">
-          Already have an account?{" "}
-          <Link to="/login" className="login-link">
-            Log In
-          </Link>
+          <form className="register-form" onSubmit={handleSubmit}>
+            <input
+              className="form-input"
+              type="text"
+              name="username"
+              placeholder="Username For your Spam account"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="form-input"
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="form-input"
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
+            />
+            {error && <p className="error-message">*{error}</p>}
+            <button type="submit" className="submit-button">
+              Make New Account
+            </button>
+          </form>
+          <div style={{ marginTop: 20 }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+          </div>
+          <div className="login-link-container">
+            Already have an account?{" "}
+            <Link to="/login" className="login-link">
+              Log In
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </GoogleOAuthProvider>
   );
 };
 

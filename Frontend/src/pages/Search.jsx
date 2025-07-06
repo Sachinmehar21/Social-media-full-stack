@@ -4,6 +4,7 @@ import "../styles/Search.css";
 import { Link, useNavigate } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
 import { FiHome, FiSearch, FiPlusSquare, FiUser } from "react-icons/fi";
+import { API_URL } from '../api';
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +19,7 @@ const Search = () => {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/feed", {
+        const response = await axios.get(`${API_URL}/feed`, {
           withCredentials: true,
         });
         setCurrentUser(response.data.user);
@@ -37,7 +38,7 @@ const Search = () => {
 
     if (value.trim()) {
       try {
-        const response = await axios.get(`http://localhost:3000/search/${value}`, {
+        const response = await axios.get(`${API_URL}/search/${value}`, {
           withCredentials: true,
         });
         setUsers(response.data.users || []);
@@ -53,7 +54,7 @@ const Search = () => {
   const handleFollow = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/follow/${username}`,
+        `${API_URL}/follow/${username}`,
         {},
         { withCredentials: true }
       );

@@ -7,6 +7,7 @@ import { IoSearch } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import "../styles/Profile.css";
+import { API_URL } from '../api';
 
 import { FiPlusSquare, FiUser } from "react-icons/fi";
 
@@ -25,7 +26,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/logout', {}, { withCredentials: true });
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -35,7 +36,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:3000/profile/${username}`, { 
+      const { data } = await axios.get(`${API_URL}/profile/${username}`, { 
         withCredentials: true 
       });
       setUser(data.user);
@@ -58,13 +59,13 @@ const Profile = () => {
   const handleFollow = async () => {
     try {
       if (isFollowing) {
-        const response = await axios.post(`http://localhost:3000/unfollow/${username}`, {}, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/unfollow/${username}`, {}, { withCredentials: true });
         if (response.data.success) {
           setIsFollowing(false);
           await fetchProfile();
         }
       } else {
-        const response = await axios.post(`http://localhost:3000/follow/${username}`, {}, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/follow/${username}`, {}, { withCredentials: true });
         if (response.data.success) {
           setIsFollowing(true);
           await fetchProfile();
@@ -77,7 +78,7 @@ const Profile = () => {
 
   const handleFollowUser = async (username) => {
     try {
-      await axios.post(`http://localhost:3000/follow/${username}`, {}, { withCredentials: true });
+      await axios.post(`${API_URL}/follow/${username}`, {}, { withCredentials: true });
       await fetchProfile();
     } catch (error) {
       console.error("Error following user:", error);
@@ -86,7 +87,7 @@ const Profile = () => {
 
   const handleUnfollowUser = async (username) => {
     try {
-      await axios.post(`http://localhost:3000/unfollow/${username}`, {}, { withCredentials: true });
+      await axios.post(`${API_URL}/unfollow/${username}`, {}, { withCredentials: true });
       await fetchProfile();
     } catch (error) {
       console.error("Error unfollowing user:", error);
@@ -156,7 +157,7 @@ const Profile = () => {
 
         {user.isCurrentUser && (
         <div className="edit-profile">
-          <Link to={`/profile/${username}/edit`}>Edit Profile</Link>
+          <Link to={`${API_URL}/profile/${username}/edit`}>Edit Profile</Link>
         </div>
         )}
 
@@ -186,7 +187,7 @@ const Profile = () => {
             <div className="likes-list">
               {followers.map((follower) => (
                 <Link
-                  to={`/profile/${follower.username}`}
+                  to={`${API_URL}/profile/${follower.username}`}
                   key={follower._id}
                   className="like-item"
                   style={{ textDecoration: 'none', color: 'inherit' }}
@@ -234,7 +235,7 @@ const Profile = () => {
             <div className="likes-list">
               {following.map((followed) => (
                 <Link
-                  to={`/profile/${followed.username}`}
+                  to={`${API_URL}/profile/${followed.username}`}
                   key={followed._id}
                   className="like-item"
                   style={{ textDecoration: 'none', color: 'inherit' }}
@@ -274,13 +275,13 @@ const Profile = () => {
         <Link to="/search" style={{ textDecoration: 'none', color: 'white' }}><IoSearch size={24} /></Link>
         <Link to="/upload" style={{ textDecoration: 'none', color: 'white' }}><FiPlusSquare size={24} /></Link>
         {user.isCurrentUser ? (
-          <Link to={`/profile/${user?.username}`} style={{ textDecoration: 'none', color: 'white' }}>
+          <Link to={`${API_URL}/profile/${user?.username}`} style={{ textDecoration: 'none', color: 'white' }}>
             <div className="footer-profile">
               <img src={user.profilepicture || "https://res.cloudinary.com/dyvfgglux/image/upload/v1743708891/image_z3anjm.png"} alt="Profile" />
             </div>
           </Link>
         ) : (
-          <Link to={`/profile/${user?.username}`} style={{ textDecoration: 'none', color: 'white' }}>
+          <Link to={`${API_URL}/profile/${user?.username}`} style={{ textDecoration: 'none', color: 'white' }}>
             <FiUser size={24} />
           </Link>
         )}

@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/Login.css"; // Importing the CSS file
+import { API_URL } from '../api';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/login",
+        `${API_URL}/login`,
         formData,
         { withCredentials: true }
       );
@@ -35,40 +37,66 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post('http://localhost:5000/auth/google', {
+        token: credentialResponse.credential,
+      });
+      // Save JWT to localStorage or context
+      localStorage.setItem('jwt', res.data.token);
+      // Redirect or update UI as needed
+      window.location.href = '/';
+    } catch (err) {
+      alert('Google login failed.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    alert('Google login was unsuccessful.');
+  };
+
   return (
-    <div className="login-container">
-      <div className="login-content">
-        <img 
-          className="logo" 
-          src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708868/logo_m1jyai.png" 
-          alt="Logo" 
-        />
-        <form className="login-form" onSubmit={handleSubmit}>
-          <input
-            className="form-input"
-            type="text"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
+    <GoogleOAuthProvider clientId="205780044927-usa3mt7u7i8h5jh5kv4dfaengocpomfi.apps.googleusercontent.com">
+      <div className="login-container">
+        <div className="login-content">
+          <img 
+            className="logo" 
+            src="https://res.cloudinary.com/dyvfgglux/image/upload/v1743708868/logo_m1jyai.png" 
+            alt="Logo" 
           />
-          <input
-            className="form-input"
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-          />
-          {error && <p className="error-message">*{error}</p>}
-          <button type="submit" className="submit-button">Login</button>
-        </form>
-        <div className="register-link-container">
-          Don't have an account?{" "}
-          <Link to="/" className="register-link">Register</Link>
+          <form className="login-form" onSubmit={handleSubmit}>
+            <input
+              className="form-input"
+              type="text"
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="form-input"
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
+            />
+            {error && <p className="error-message">*{error}</p>}
+            <button type="submit" className="submit-button">Login</button>
+          </form>
+          <div style={{ marginTop: 20 }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+          </div>
+          <div className="register-link-container">
+            Don't have an account?{" "}
+            <Link to="/" className="register-link">Register</Link>
+          </div>
         </div>
       </div>
-    </div>
+    </GoogleOAuthProvider>
   );
 };
 

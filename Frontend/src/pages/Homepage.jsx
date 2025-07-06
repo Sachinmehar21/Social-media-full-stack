@@ -6,7 +6,8 @@ import { BiShareAlt } from "react-icons/bi";
 import { FiHome, FiSearch, FiPlusSquare, FiUser } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
-import "../styles/Homepage.css"; 
+import "../styles/Homepage.css";
+import { API_URL } from '../api';
 
 const Homepage = () => {
   const [user, setUser] = useState(null);
@@ -25,7 +26,7 @@ const Homepage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:3000/feed", {
+        const response = await axios.get(`${API_URL}/feed`, {
           withCredentials: true,
         });
         console.log("Feed response:", response.data);
@@ -34,7 +35,7 @@ const Homepage = () => {
         setError(null);
 
         // Fetch suggested users
-        const usersResponse = await axios.get("http://localhost:3000/users", {
+        const usersResponse = await axios.get(`${API_URL}/users`, {
           withCredentials: true,
         });
         const suggested = usersResponse.data.users.filter(
@@ -57,7 +58,7 @@ const Homepage = () => {
   const handleLike = async (postId) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/likepost/${postId}`,
+        `${API_URL}/likepost/${postId}`,
         {},
         { withCredentials: true }
       );
@@ -85,7 +86,7 @@ const Homepage = () => {
 
   const handleShowLikes = async (postId) => {
     try {
-      const response = await axios.get(`http://localhost:3000/post/${postId}/likes`, {
+      const response = await axios.get(`${API_URL}/post/${postId}/likes`, {
         withCredentials: true
       });
       if (response.data.success) {
@@ -100,7 +101,7 @@ const Homepage = () => {
   const handleFollow = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/follow/${username}`,
+        `${API_URL}/follow/${username}`,
         {},
         { withCredentials: true }
       );
@@ -120,7 +121,7 @@ const Homepage = () => {
         );
 
         // Refresh feed to get new posts
-        const feedResponse = await axios.get("http://localhost:3000/feed", {
+        const feedResponse = await axios.get(`${API_URL}/feed`, {
           withCredentials: true,
         });
         setPosts(feedResponse.data.posts || []);
@@ -133,7 +134,7 @@ const Homepage = () => {
   const handleUnfollow = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/unfollow/${username}`,
+        `${API_URL}/unfollow/${username}`,
         {},
         { withCredentials: true }
       );
@@ -153,7 +154,7 @@ const Homepage = () => {
         );
 
         // Refresh feed to remove unfollowed user's posts
-        const feedResponse = await axios.get("http://localhost:3000/feed", {
+        const feedResponse = await axios.get(`${API_URL}/feed`, {
           withCredentials: true,
         });
         setPosts(feedResponse.data.posts || []);
@@ -166,7 +167,7 @@ const Homepage = () => {
   const handleFollowSuggestion = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/follow/${username}`,
+        `${API_URL}/follow/${username}`,
         {},
         { withCredentials: true }
       );
@@ -176,7 +177,7 @@ const Homepage = () => {
           prevUsers.filter(user => user.username !== username)
         );
         
-        const feedResponse = await axios.get("http://localhost:3000/feed", {
+        const feedResponse = await axios.get(`${API_URL}/feed`, {
           withCredentials: true,
         });
         setPosts(feedResponse.data.posts || []);
@@ -189,7 +190,7 @@ const Homepage = () => {
   const handleAddComment = async (postId) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/addcomment/${postId}`,
+        `${API_URL}/addcomment/${postId}`,
         { text: commentText[postId] },
         { withCredentials: true }
       );
@@ -214,7 +215,7 @@ const Homepage = () => {
   const handleDeleteComment = async (postId, commentId) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/deletecomment/${commentId}`,
+        `${API_URL}/deletecomment/${commentId}`,
         {},
         { withCredentials: true }
       );

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { BsChatDots } from "react-icons/bs";
 import { FiHome, FiSearch, FiPlusSquare, FiUser } from 'react-icons/fi';
 import '../styles/Profile.css';
+import { API_URL } from '../api';
 
 const Allusers = () => {
   const [users, setUsers] = useState([]);
@@ -17,13 +18,13 @@ const Allusers = () => {
       try {
         setLoading(true);
         // First get the current user from feed
-        const feedResponse = await axios.get('http://localhost:3000/feed', {
+        const feedResponse = await axios.get(`${API_URL}/feed`, {
           withCredentials: true
         });
         setCurrentUser(feedResponse.data.user);
 
         // Then get all users
-        const usersResponse = await axios.get('http://localhost:3000/users', {
+        const usersResponse = await axios.get(`${API_URL}/users`, {
           withCredentials: true
         });
         setUsers(usersResponse.data.users);
@@ -45,7 +46,7 @@ const Allusers = () => {
   const handleFollow = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/follow/${username}`,
+        `${API_URL}/follow/${username}`,
         {},
         { withCredentials: true }
       );
@@ -69,7 +70,7 @@ const Allusers = () => {
   const handleUnfollow = async (username) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/unfollow/${username}`,
+        `${API_URL}/unfollow/${username}`,
         {},
         { withCredentials: true }
       );

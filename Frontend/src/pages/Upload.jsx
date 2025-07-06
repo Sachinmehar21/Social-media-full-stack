@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from '../api';
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Upload = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/post",
+        `${API_URL}/post`,
         formData,
         {
           withCredentials: true,
