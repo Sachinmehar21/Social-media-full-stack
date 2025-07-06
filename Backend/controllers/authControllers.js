@@ -15,21 +15,35 @@ const generateToken = (user) =>
 
 //postregister
 module.exports.Register = async (req, res) => {
-  const { username, email, password } = req.body;
-  if (await User.findOne({ email }))
-    return res.status(400).send("User already registered");
+  try {
+    const { username, email, password } = req.body;
+    if (await User.findOne({ email }))
+      return res.status(400).send("User already registered");
 
-  //bcrypt
-  const hashedPassword = await bcrypt.hash(password, 10);
+    //bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = await User.create({ username, email, password: hashedPassword });
-  await user.save();
-  res.cookie("token", generateToken(user));
-  res.json({
-    message: "User registered successfully",
-    username: user.username,
-    token: generateToken(user),
-  });
+    // Log before saving
+    console.log("Saving user:", { username, email });
+
+    // Create and save the user
+    const user = await User.create({ username, email, password: hashedPassword });
+
+    // Log after saving
+    console.log("User saved:", user);
+
+    // Generate token after save
+    const token = generateToken(user);
+    res.cookie("token", token);
+    res.status(201).json({
+      message: "User registered successfully",
+      username: user.username,
+      token: token,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
+  }
 };
 
 //postlogin
