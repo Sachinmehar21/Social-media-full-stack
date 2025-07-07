@@ -14,7 +14,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 
 console.log("MONGO_URL from .env:", process.env.MONGO_URL);
-app.use(express.json());
 
 // Middlewares
 app.use(cors({

@@ -31,6 +31,7 @@ module.exports.profile = [verifyToken, async (req, res) => {
         if (!user) return res.status(404).json({ message: "User not found" });
 
         const currentUser = req.user;
+        // Check if the current user's ID is in the user's followers array
         const isFollowing = user.followers.some(follower => 
             follower._id.toString() === currentUser._id.toString()
         );
@@ -40,13 +41,6 @@ module.exports.profile = [verifyToken, async (req, res) => {
                 ...user.toObject(),
                 isCurrentUser: user._id.toString() === currentUser._id.toString(),
                 isFollowing
-            },
-            currentUser: {
-                _id: currentUser._id,
-                username: currentUser.username,
-                profilepicture: currentUser.profilepicture,
-                followers: currentUser.followers,
-                following: currentUser.following
             },
             posts: user.posts || [],
         });
