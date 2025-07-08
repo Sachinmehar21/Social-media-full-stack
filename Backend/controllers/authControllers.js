@@ -1,4 +1,3 @@
-//dependencies imported
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -6,7 +5,7 @@ const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/userModel");
 
 const secret = process.env.secret;
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // from Google Console
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // token generation
 const generateToken = (user) =>
@@ -33,6 +32,7 @@ module.exports.Register = async (req, res) => {
   res.json({
     message: "User registered successfully",
     username: user.username,
+    profilePic: user.profilePic || "", // just in case
     token: token,
   });
 };
@@ -54,7 +54,11 @@ module.exports.Login = async (req, res) => {
     secure: true,
   });
 
-  res.json({ username: user.username });
+  res.json({
+    username: user.username,
+    profilePic: user.profilePic || "", // add this too
+    token,
+  });
 };
 
 // LOGOUT
@@ -79,7 +83,7 @@ module.exports.googleAuth = async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    const { email, name, sub } = payload;
+    const { email, name, sub, picture } = payload;
 
     let user = await User.findOne({ email });
 
@@ -88,7 +92,8 @@ module.exports.googleAuth = async (req, res) => {
       user = await User.create({
         username: randomUsername,
         email,
-        password: "google_oauth_no_password", // dummy password
+        password: "google_oauth_no_password", // dummy
+        profilePic: picture, // ✅ SAVE profilePic from Google
       });
     }
 
@@ -100,7 +105,11 @@ module.exports.googleAuth = async (req, res) => {
       sameSite: "none",
     });
 
-    res.status(200).json({ token: jwtToken, username: user.username });
+    res.status(200).json({
+      token: jwtToken,
+      username: user.username,
+      profilePic: user.profilePic || "", // ✅ SEND BACK TO FRONTEND
+    });
   } catch (err) {
     console.error("Google Auth Error:", err);
     res.status(401).json({ message: "Google authentication failed" });
