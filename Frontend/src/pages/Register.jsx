@@ -1,9 +1,8 @@
 import React from "react";
 import { useState } from "react";
-import axios from "axios";
+import api, { API_URL } from '../api';
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Register.css";
-import { API_URL } from '../api';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const Register = () => {
@@ -20,12 +19,10 @@ const Register = () => {
     const { username, email, password } = data; // Extracting only required fields
 
     try {
-      const response = await axios.post(
-        API_URL,
-        { username, email, password },
-        { withCredentials: true }
-      );
-
+      const response = await api.post(`/`, { username, email, password });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
       if (response.data.username) {
         navigate(`/profile/${response.data.username}`);
       }
@@ -37,10 +34,12 @@ const Register = () => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await axios.post('http://localhost:5000/auth/google', {
+      const res = await api.post('/auth/google', {
         token: credentialResponse.credential,
       });
-      localStorage.setItem('jwt', res.data.token);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
       window.location.href = '/';
     } catch (err) {
       alert('Google registration failed.');

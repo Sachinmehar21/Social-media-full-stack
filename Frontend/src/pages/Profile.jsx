@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_URL } from '../api';
 import { GoHome } from "react-icons/go";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import "../styles/Profile.css";
-import { API_URL } from '../api';
 
 import { FiPlusSquare, FiUser } from "react-icons/fi";
 
@@ -26,7 +25,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+      await api.post(`/logout`, {});
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -36,9 +35,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${API_URL}/profile/${username}`, { 
-        withCredentials: true 
-      });
+      const { data } = await api.get(`/profile/${username}`);
       setUser(data.user);
       setPosts(data.posts);
       setCurrentUser(data.currentUser);
@@ -46,7 +43,11 @@ const Profile = () => {
       setFollowers(data.user.followers || []);
       setFollowing(data.user.following || []);
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      } else {
+        console.error("Error fetching profile:", error);
+      }
     } finally {
       setLoading(false);
     }
@@ -59,38 +60,50 @@ const Profile = () => {
   const handleFollow = async () => {
     try {
       if (isFollowing) {
-        const response = await axios.post(`${API_URL}/unfollow/${username}`, {}, { withCredentials: true });
+        const response = await api.post(`/unfollow/${username}`, {});
         if (response.data.success) {
           setIsFollowing(false);
           await fetchProfile();
         }
       } else {
-        const response = await axios.post(`${API_URL}/follow/${username}`, {}, { withCredentials: true });
+        const response = await api.post(`/follow/${username}`, {});
         if (response.data.success) {
           setIsFollowing(true);
           await fetchProfile();
         }
       }
     } catch (error) {
-      console.error("Error following/unfollowing:", error);
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      } else {
+        console.error("Error following/unfollowing:", error);
+      }
     }
   };
 
   const handleFollowUser = async (username) => {
     try {
-      await axios.post(`${API_URL}/follow/${username}`, {}, { withCredentials: true });
+      await api.post(`/follow/${username}`, {});
       await fetchProfile();
     } catch (error) {
-      console.error("Error following user:", error);
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      } else {
+        console.error("Error following user:", error);
+      }
     }
   };
 
   const handleUnfollowUser = async (username) => {
     try {
-      await axios.post(`${API_URL}/unfollow/${username}`, {}, { withCredentials: true });
+      await api.post(`/unfollow/${username}`, {});
       await fetchProfile();
     } catch (error) {
-      console.error("Error unfollowing user:", error);
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      } else {
+        console.error("Error unfollowing user:", error);
+      }
     }
   };
 

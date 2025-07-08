@@ -1,9 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_URL } from '../api';
 import "../styles/Login.css"; // Importing the CSS file
-import { API_URL } from '../api';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const Login = () => {
@@ -24,22 +23,25 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `${API_URL}/login`,
-        formData,
-        { withCredentials: true }
-      );
+      const response = await api.post(`/login`, formData);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
       if (response.data.username) {
         navigate(`/profile/${response.data.username}`);
       }
     } catch (err) {
-      setError(err.response?.data || "Invalid email or password");
+      if (err.response && err.response.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError(err.response?.data || "Invalid email or password");
+      }
     }
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await axios.post('http://localhost:5000/auth/google', {
+      const res = await api.post('auth/google', {
         token: credentialResponse.credential,
       });
       // Save JWT to localStorage or context

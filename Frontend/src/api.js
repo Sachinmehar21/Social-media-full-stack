@@ -1,10 +1,18 @@
-import { io } from 'socket.io-client';
+import axios from 'axios';
 
-// Connect to backend Socket.IO server
-const socket = io('http://localhost:3000', {
+export const API_URL = import.meta.env.VITE_API_URL;
+
+const api = axios.create({
+  baseURL: API_URL,
   withCredentials: true,
 });
 
-export default socket;
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-export const API_URL = import.meta.env.VITE_API_URL; 
+export default api; 
