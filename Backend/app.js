@@ -58,7 +58,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://social-media-full-stack-k8mq.vercel.app"
+      "https://social-media-full-stack-n79t.vercel.app"
     ],
     credentials: true
   }
