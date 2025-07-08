@@ -26,8 +26,8 @@ module.exports.Register = async (req, res) => {
   await user.save();
   res.cookie("token", generateToken(user), {
     httpOnly: true,
-    sameSite: "lax", // or "none" if using HTTPS
-    secure: false,    // set to true if using HTTPS
+    sameSite: "none", // or "none" if using HTTPS
+    secure: true,    // set to true if using HTTPS
   });
   res.json({
     message: "User registered successfully",
@@ -46,8 +46,8 @@ module.exports.Login = async (req, res) => {
 
   res.cookie("token", generateToken(user), {
     httpOnly: true,
-    sameSite: "lax", // or "none" if using HTTPS
-    secure: false,    // set to true if using HTTPS
+    sameSite: "none", // or "none" if using HTTPS
+    secure: true,    // set to true if using HTTPS
   });
 
   res.json({ username: user.username });
