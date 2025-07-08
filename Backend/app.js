@@ -31,7 +31,6 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
@@ -41,11 +40,18 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
+// API Routes
 app.use("/", require("./routes/userRoutes"));
 app.use("/", require("./routes/postRoutes"));
 app.use("/", require("./routes/authRoutes"));
 app.use("/", require("./routes/messageRoutes"));
+
+// React frontend fallback (⚠️ Make sure 'Frontend/dist' exists)
+app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -64,31 +70,28 @@ const onlineUsers = {};
 const AI_BOT_USERNAME = 'ai_bot';
 let aiBotId = null;
 
-// Find AI bot user after DB connection
 const User = require('./models/userModel');
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
+// Socket.io connection
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // User joins with their userId
   socket.on('join', (userId) => {
     onlineUsers[userId] = socket.id;
     console.log(`User ${userId} joined. Online users:`, onlineUsers);
   });
 
-  // Handle direct message
   socket.on('dm', async ({ toUserId, fromUserId, message }) => {
     const toSocketId = onlineUsers[toUserId];
-    // Save user message to DB
     try {
       await Message.create({ from: fromUserId, to: toUserId, text: message });
     } catch (err) {
       console.error('Failed to save message:', err);
     }
-    // If recipient is AI bot, call Gemini API and reply
+
     if (aiBotId && toUserId === aiBotId) {
       try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -96,9 +99,9 @@ io.on('connection', (socket) => {
         const result = await model.generateContent(parts);
         const response = await result.response;
         const aiReply = response.text();
-        // Save bot reply to DB
+
         await Message.create({ from: aiBotId, to: fromUserId, text: aiReply });
-        // Emit bot reply to user
+
         const fromSocketId = onlineUsers[fromUserId];
         if (fromSocketId) {
           io.to(fromSocketId).emit('dm', { fromUserId: aiBotId, message: aiReply });
@@ -112,15 +115,13 @@ io.on('connection', (socket) => {
       }
       return;
     }
-    // Normal user-to-user DM
+
     if (toSocketId) {
       io.to(toSocketId).emit('dm', { fromUserId, message });
     }
   });
 
-  // Handle disconnect
   socket.on('disconnect', () => {
-    // Remove user from onlineUsers
     for (const [userId, sId] of Object.entries(onlineUsers)) {
       if (sId === socket.id) {
         delete onlineUsers[userId];
@@ -135,7 +136,6 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 
 connectDb().then(async () => {
-  // Find AI bot user after DB connection is established
   try {
     const bot = await User.findOne({ username: AI_BOT_USERNAME });
     if (bot) aiBotId = bot._id.toString();
@@ -143,7 +143,7 @@ connectDb().then(async () => {
   } catch (err) {
     console.error('Error finding AI bot user:', err);
   }
-  
+
   server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
