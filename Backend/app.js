@@ -15,11 +15,22 @@ const app = express();
 
 console.log("MONGO_URL from .env:", process.env.MONGO_URL);
 
-// Middlewares
+const allowedOrigins = [
+  "http://localhost:5173",                              // for development
+  "https://social-media-full-stack-n79t.vercel.app"     // ✅ for production (no trailing slash!)
+];
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
+
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
