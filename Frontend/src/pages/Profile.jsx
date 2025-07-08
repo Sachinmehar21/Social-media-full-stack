@@ -170,7 +170,7 @@ const Profile = () => {
 
         {user.isCurrentUser && (
         <div className="edit-profile">
-          <Link to={`${API_URL}/profile/${username}/edit`}>Edit Profile</Link>
+          <Link to={`/profile/${username}/edit`}>Edit Profile</Link>
         </div>
         )}
 
@@ -200,7 +200,7 @@ const Profile = () => {
             <div className="likes-list">
               {followers.map((follower) => (
                 <Link
-                  to={`${API_URL}/profile/${follower.username}`}
+                  to={`/profile/${follower.username}`}
                   key={follower._id}
                   className="like-item"
                   style={{ textDecoration: 'none', color: 'inherit' }}
