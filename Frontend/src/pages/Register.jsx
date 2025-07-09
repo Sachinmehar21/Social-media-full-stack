@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../api";
+import api from "../api/axios";
 import "../styles/Register.css";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
