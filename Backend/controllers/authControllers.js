@@ -93,7 +93,7 @@ module.exports.googleAuth = async (req, res) => {
         username: randomUsername,
         email,
         password: "google_oauth_no_password", // dummy
-        profilePic: picture, // ✅ SAVE profilePic from Google
+        profilepicture: picture, // ✅ SAVE profilepicture from Google
       });
     }
 
@@ -108,7 +108,7 @@ module.exports.googleAuth = async (req, res) => {
     res.status(200).json({
       token: jwtToken,
       username: user.username,
-      profilePic: user.profilePic || "", // ✅ SEND BACK TO FRONTEND
+      profilepicture: user.profilepicture || "", // ✅ SEND BACK TO FRONTEND
     });
   } catch (err) {
     console.error("Google Auth Error:", err);
