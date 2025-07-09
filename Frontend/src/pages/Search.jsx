@@ -4,7 +4,7 @@ import "../styles/Search.css";
 import { Link, useNavigate } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
 import { FiHome, FiSearch, FiPlusSquare, FiUser } from "react-icons/fi";
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");

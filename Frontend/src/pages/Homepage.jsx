@@ -7,7 +7,7 @@ import { FiHome, FiSearch, FiPlusSquare, FiUser } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import "../styles/Homepage.css";
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 
 const Homepage = () => {
   const [user, setUser] = useState(null);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 import "../styles/Editprofile.css";
 
 const EditProfile = () => {

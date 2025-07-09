@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 
 const Upload = () => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import api, { API_URL } from '../api';
+import api, { API_URL } from '../api/axios';
 import { GoHome } from "react-icons/go";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";

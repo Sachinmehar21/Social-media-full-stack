@@ -4,7 +4,7 @@ import axios from 'axios';
 import { BsChatDots } from "react-icons/bs";
 import { FiHome, FiSearch, FiPlusSquare, FiUser } from 'react-icons/fi';
 import '../styles/Profile.css';
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 
 const Allusers = () => {
   const [users, setUsers] = useState([]);
