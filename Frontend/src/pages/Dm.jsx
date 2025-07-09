@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import socket from '../api';
+import api from '../api/axios';
+import { socket } from '../api/socket';
 import { API_URL } from '../api';
 
 const Dm = () => {
