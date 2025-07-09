@@ -13,11 +13,13 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 
+// DEBUG: Check Mongo URL
 console.log("MONGO_URL from .env:", process.env.MONGO_URL);
 
+// CORS setup for dev + Vercel
 const allowedOrigins = [
-  "http://localhost:5173",                              // for development
-  "https://social-media-full-stack-n79t.vercel.app"     // ✅ for production (no trailing slash!)
+  "http://localhost:5173",
+  "https://social-media-full-stack-n79t.vercel.app"
 ];
 
 app.use(cors({
@@ -31,6 +33,7 @@ app.use(cors({
   credentials: true
 }));
 
+// Basic config
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
@@ -46,36 +49,30 @@ app.use("/", require("./routes/postRoutes"));
 app.use("/", require("./routes/authRoutes"));
 app.use("/", require("./routes/messageRoutes"));
 
-// React frontend fallback (⚠️ Make sure 'Frontend/dist' exists)
-app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-
+// 404 fallback for unknown routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+  res.status(404).json({ message: "Route not found" });
 });
 
+// HTTP + Socket.IO setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://social-media-full-stack-n79t.vercel.app"
-    ],
+    origin: allowedOrigins,
     credentials: true
   }
 });
 
-// Store online users: { userId: socketId }
+// Store online users
 const onlineUsers = {};
-
 const AI_BOT_USERNAME = 'ai_bot';
 let aiBotId = null;
 
 const User = require('./models/userModel');
-
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Socket.io connection
+// Socket.io logic
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
@@ -86,6 +83,7 @@ io.on('connection', (socket) => {
 
   socket.on('dm', async ({ toUserId, fromUserId, message }) => {
     const toSocketId = onlineUsers[toUserId];
+
     try {
       await Message.create({ from: fromUserId, to: toUserId, text: message });
     } catch (err) {
@@ -132,7 +130,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Connect to DB and start server
+// Start server
 const PORT = process.env.PORT || 3000;
 
 connectDb().then(async () => {
