@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import api from '../api/axios';
 import { socket } from '../api/socket';
-import { API_URL } from '../api';
+import { API_URL } from '../api/axios';
 
 const Dm = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,7 +18,7 @@ const Dm = () => {
     // Fetch current user info
     const fetchCurrentUser = async () => {
       try {
-        const response = await axios.get(`${API_URL}/feed`, { withCredentials: true });
+        const response = await api.get(`${API_URL}/feed`, { withCredentials: true });
         setCurrentUser(response.data.user);
       } catch (error) {
         navigate('/login');
@@ -33,7 +32,7 @@ const Dm = () => {
     const fetchUsers = async () => {
       if (!currentUser?._id) return;
       try {
-        const response = await axios.get(`${API_URL}/users`, { withCredentials: true });
+        const response = await api.get(`${API_URL}/users`, { withCredentials: true });
         setUsers(response.data.users.filter(u => u._id !== currentUser._id));
       } catch (error) {
         setUsers([]);
@@ -65,7 +64,7 @@ const Dm = () => {
     const fetchChat = async () => {
       if (!selectedUser || !currentUser) return;
       try {
-        const res = await axios.get(`${API_URL}/messages/${currentUser._id}/${selectedUser._id}`);
+        const res = await api.get(`${API_URL}/messages/${currentUser._id}/${selectedUser._id}`);
         setChat(res.data.messages.map(m => ({ from: m.from, text: m.text })));
       } catch (err) {
         setChat([]);
