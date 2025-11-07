@@ -14,5 +14,8 @@ router.post("/login", Login);              // Login route
 router.post("/logout", logout);            // Logout route
 router.get("/forgotpassword", forgotPassword); // Forgot password page
 router.post("/auth/google", googleAuth);   // Google OAuth route
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 module.exports = router;
