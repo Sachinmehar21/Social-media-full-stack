@@ -17,5 +17,8 @@ router.post("/auth/google", googleAuth);   // Google OAuth route
 router.get("/health", (req, res) => {
   res.json({ status: "ok", time: new Date() });
 });
+router.get("/cron", (req, res) => {
+  res.send("alive");
+});
 
 module.exports = router;
