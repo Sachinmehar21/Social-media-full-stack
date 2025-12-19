@@ -20,7 +20,9 @@ console.log("MONGO_URL from .env:", process.env.MONGO_URL);
 const allowedOrigins = [
   "http://localhost:5173",
   "https://social-media-full-stack-n79t.vercel.app",
-  "https://social-media-full-stack-k8mq.vercel.app"
+  "https://social-media-full-stack-k8mq.vercel.app",
+  "https://social-media-full-stack-six.vercel.app"
+  
 ];
 
 app.use(cors({
